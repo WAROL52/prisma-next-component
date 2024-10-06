@@ -2,6 +2,9 @@
   "name": "prisma-next-component",
   "version": "0.1.0",
   "private": true,
+  "bin": {
+    "gen": "./prisma-react-component/bin/index.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
