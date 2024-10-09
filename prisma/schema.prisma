@@ -9,24 +9,76 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
  
-//  -label: Utilisateur 
-//  -description: je suis un description
-//  -form:  
 model User {
-  id    Int     @id @default(autoincrement())
-
-  // -label: Email
-  // -placeholder: Votre email 
-  // -valivation$: type:email;
-  // -col$: md:2 ; sm:1;
-  // className: bg-slate-500
-  email String  @unique
-
-  
-  name  String?
+  actions Action[]
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  role    Role     @default(USER)
+  posts   Post[]
+  folders  Folder[] 
+  profile Profile?
 }
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id])
+  parentId  Int?     // Un dossier peut avoir un dossier parent (pour la structure hiérarchique)
+  parent    Folder?  @relation("Parent45Folder", fields: [parentId], references: [id])
+  children  Folder[] @relation("Parent45Folder") // Un dossier peut contenir plusieurs sous-dossiers
+  files     File[]   // Un dossier peut contenir plusieurs fichiers
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  name      String
+  path      String   // Chemin du fichier
+  folderId  Int
+  folder    Folder   @relation(fields: [folderId], references: [id])  // Chaque fichier appartient à un dossier
+}
+
+model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+}
+
+model Post {
+  id         Int        @id @default(autoincrement())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  title      String
+  published  Boolean    @default(false)
+  author     User       @relation(fields: [authorId], references: [id])
+  authorId   Int
+  categories Category[]
+  actions Action[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  posts Post[]
+  action Action?
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Action {
+  GET
+  CREATE
+  UPDATE
+  DELETE
+}
+
