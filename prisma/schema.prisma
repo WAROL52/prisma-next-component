@@ -13,12 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
- 
+//   -label: Utilisateur
+//   -description: Utilisateur
+//   -placeholder: Ecrire ici... 
+//   -tips: je suis une sorte d'info  
+//   -className: dvsdvsdvdvvvdvvsdv
+//   -groups: naruro
+//   -variant: naruto
+//   -suffix: $ 
+//   -prefix: Ar
+//  -symbolRequire:*
+//  -symbolOptional:?
+//  -visibled: false
+//  -disabled: false
+//  -submitText: Enregistrer
+//  -relationField: modal 
+/// @zod.max(255, { message: "The title must be shorter than 256 characters" })
 model User {
-  actions Action[]
+
   id      Int      @id @default(autoincrement())
+  /// -label: actionList
+  actions Action[]
   email   String   @unique
   name    String?
+  surnom    String?
+  age    Int?
+  dateNaissance    DateTime?
+  taille    Decimal?
+  nom String
   role    Role     @default(USER)
   posts   Post[]
   folders  Folder[] 
@@ -31,8 +53,9 @@ model Folder {
   ownerId   Int
   owner     User     @relation(fields: [ownerId], references: [id])
   parentId  Int?     // Un dossier peut avoir un dossier parent (pour la structure hiérarchique)
-  parent    Folder?  @relation("Parent45Folder", fields: [parentId], references: [id])
-  children  Folder[] @relation("Parent45Folder") // Un dossier peut contenir plusieurs sous-dossiers
+  parent    Folder?  @relation("ParentFolder", fields: [parentId], references: [id])
+  children  Folder[] @relation("ParentFolder") // Un dossier peut contenir plusieurs sous-dossiers
+  // -label: fichiers
   files     File[]   // Un dossier peut contenir plusieurs fichiers
 }
 
